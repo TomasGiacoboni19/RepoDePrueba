@@ -68,7 +68,7 @@ esEfectivo(Tipo1, Tipo2):-
     esMilitar(Tipo2, _, Categoria2),
     puedeGanarSegunCategoria(Categoria1, Categoria2).
 
-esEfectivo(samurai, Tipo):-
+esEfectivo(samurai, Tipo):-                 
     esMilitar(Tipo, _, unica).
 
 puedeGanarSegunCategoria(caballeria, arqueria).
