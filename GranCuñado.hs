@@ -37,3 +37,5 @@ atractivo.
 ---- Punto 1 ----
 baileDeTikTok :: Prueba
 baileDeTikTok personalidad participante 
+
+funcion criterio participante = 
