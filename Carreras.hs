@@ -14,23 +14,24 @@ data Auto = Auto{
     color :: String,
     velocidad :: Int,
     distancia :: Int     
-} deriving Show
+} deriving (Eq, Show)
 
-data Carrera = Carrera{
-    estadoActual :: [Auto],
-    eventos :: String
-} deriving Show
+type Carrera = [Auto]
 
 azul :: Auto
 azul = Auto "Azul" 120 200
 
 rojo :: Auto
-rojo = Auto "Rojo" 100 195
+rojo = Auto "Rojo" 100 185
 
-{-Saber si un auto está cerca de otro auto, que se cumple si son autos distintos y la distancia que hay entre ellos (en valor absoluto) es menor a 10.-}
+carrera :: Carrera
+carrera = [azul, rojo]
+{- A
+Saber si un auto está cerca de otro auto, que se cumple si son autos distintos y la distancia que hay entre ellos (en valor absoluto) es menor a 10.
+-}
 
 estaCercaDeOtroAuto :: Auto -> Auto -> Bool
-estaCercaDeOtroAuto  unAuto otroAuto = ((<10) . distanciaEntre unAuto $ otroAuto)  && autosDistintos unAuto otroAuto
+estaCercaDeOtroAuto  unAuto otroAuto = ((<10) . abs. distanciaEntre unAuto $ otroAuto) && autosDistintos unAuto otroAuto
 
 autosDistintos :: Auto -> Auto -> Bool
 autosDistintos unAuto otroAuto = not (color unAuto == color otroAuto) 
@@ -38,12 +39,21 @@ autosDistintos unAuto otroAuto = not (color unAuto == color otroAuto)
 distanciaEntre :: Auto -> Auto -> Int
 distanciaEntre unAuto otroAuto =  (distancia unAuto) - (distancia otroAuto)
 
-{- Saber si un auto va tranquilo en una carrera, que se cumple si no tiene ningún auto cerca y les va ganando a todos (por haber recorrido más distancia que los otros).
+{- B
+Saber si un auto va tranquilo en una carrera, que se cumple si no tiene ningún auto cerca y les va ganando a todos (por haber recorrido más distancia que los otros).
 -}
-vaTranquilo :: Auto -> Auto -> Bool
-vaTranquilo unAuto otroAuto = (not.estaCercaDeOtroAuto unAuto $ otroAuto) && (recorrioMasDistancia unAuto otroAuto)
+vaTranquilo :: Auto -> Carrera -> Bool
+vaTranquilo unAuto carrera = (noTieneNingunAutoCerca unAuto carrera) && leVaGanandoATodos auto carrera
+-- && leVaGanandoATodos auto carrera
 
-recorrioMasDistancia Auto -> Auto -> Bool
-recorrioMasDistancia auto otroAuto = (distancia auto) > (distancia otroAuto)
+noTieneNingunAutoCerca :: Auto -> Carrera -> Bool
+noTieneNingunAutoCerca auto = all (not. estaCercaDeOtroAuto auto) 
+
+--leVaGanandoATodos :: Auto -> Carrera -> Bool-
+--leVaGanandoATodos auto carrera = filter(auto)
+--(not.estaCercaDeOtroAuto unAuto $ otroAuto) && (recorrioMasDistancia unAuto otroAuto)
+
+--recorrioMasDistancia Auto -> Auto -> Bool
+--recorrioMasDistancia auto otroAuto = (distancia auto) > (distancia otroAuto)
 
 {-Conocer en qué puesto está un auto en una carrera, que es 1 + la cantidad de autos de la carrera que le van ganando.-}

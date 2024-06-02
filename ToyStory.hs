@@ -54,7 +54,7 @@ serpienteEnBota :: Accesorio
 serpienteEnBota = Accesorio lucirAmenzante 2
 
 -- Punto 3
-woody :: Jugueteuguete
+woody :: Juguete
 woody = Juguete "Woody" "Andy" 100 [serpienteEnBota] True
 
 -- Punto 4

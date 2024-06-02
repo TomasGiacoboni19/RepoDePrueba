@@ -35,6 +35,9 @@ data Barbaro = Barbaro {
 juanito :: Barbaro
 juanito = Barbaro "Juan" 50 ["tejer"] [espadas 10]
 
+faffy :: Barbaro
+faffy = Barbaro "Faffy" 50 ["tejer"] [espadas 5]
+
 espadas :: Int -> Objeto
 espadas peso barbaro = barbaro {fuerza = fuerza barbaro + peso *2}
 
@@ -121,10 +124,16 @@ ritualDeFechorias pruebas barbaro = any (superoPruebas barbaro) pruebas
 superoPruebas :: Barbaro -> Prueba -> Bool
 superoPruebas barbaro prueba = prueba barbaro
 
-     
-faffy :: Barbaro
-faffy = Barbaro "Faffy" 50 ["tejer"] [espadas 5]
+{-
+Punto 4 - Dinastia
 
+A - Los bárbaros se marean cuando tienen varias habilidades iguales. Por todo esto, nos piden desarrollar una función que elimine los elementos repetidos de una lista (sin utilizar nub ni nubBy)
+
+> sinRepetidos [1,2,3,4,4,5,5,6,7]
+[1,2,3,4,5,6,7]
+
+Nota: Puede usarse revursividad para este punto.
+-}
 sinRepetidos :: Eq a => [a] -> [a]
 sinRepetidos [] = []
 sinRepetidos (x:xs)
@@ -135,3 +144,22 @@ sinRepetidos' :: Eq a => [a] -> [a]
 sinRepetidos' [] = []
 sinRepetidos' (x:xs) = x : sinRepetidos' (filter (/= x) xs)
 
+{-
+
+B - Los bárbaros son una raza muy orgullosa, tanto que quieren saber cómo van a ser sus descendientes y asegurarse de que los mismos reciban su legado.
+
+El descendiente de un bárbaro comparte su nombre, y un asterico por cada generación. Por ejemplo "Dave*", "Dave**", "Dave***", etc.
+
+Además, tienen en principio su mismo poder, habilidades sin repetidos, y los objetos de su padre, pero antes de pasar la siguiente generación, utilizan (aplican sobre si mismos) los objetos. Por ejemplo, el hijo de Dave será equivalente a:
+
+(ardilla.varitasDefectuosas) (Barbaro "Dave" 100 ["tejer", "escribirPoesia"] [ardilla])
+
+Definir la función descendientes, que dado un bárbaro nos de sus infinitos descendientes.
+-}
+
+
+{-
+
+C - Pregunta: ¿Se podría aplicar sinRepetidos sobre la lista de objetos? ¿Y sobre el nombre de un bárbaro? ¿Por qué?
+
+-}

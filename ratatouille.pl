@@ -1,8 +1,7 @@
 :- discontiguous cocinaBien/2.
 :- discontiguous caloriasSegunTipo/2.
 :- discontiguous criticaPositivaSegunCritico/2.
-
-
++
 % Base de conocimiento
 
 viveEn(remy, gusteaus).

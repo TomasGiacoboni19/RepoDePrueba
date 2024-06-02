@@ -1,5 +1,4 @@
 module Lib where
-
 import Text.Show.Functions
 -- Modelo inicial
 
@@ -135,9 +134,7 @@ superarLaguna tiro = ((>80) . velocidad $ tiro) && ((between 1 5 . altura) $ tir
 -- between n m x = elem x [n .. m]
 
 efectoLaguna :: Int -> Tiro -> Tiro
-efectoLaguna largoLaguna tiro = UnTiro {
-  altura = altura tiro `div` largoLaguna
-}
+efectoLaguna largoLaguna tiro = UnTiro {altura = altura tiro `div` largoLaguna}
 
 {-
 Un hoyo se supera si la velocidad del tiro está entre 5 y 20 m/s yendo al ras del suelo con una precisión mayor a 95. Al superar el hoyo, el tiro se detiene, quedando con todos sus componentes en 0.
@@ -202,6 +199,4 @@ pierdenLaApuesta puntosDeTorneo
   = (map (padre.jugadorDeTorneo) . filter (not . gano puntosDeTorneo)) puntosDeTorneo
 
 gano :: [(Jugador, Puntos)] -> (Jugador, Puntos) -> Bool
-gano puntosDeTorneo puntosDeUnJugador
-  = (all ((< puntosGanados puntosDeUnJugador).puntosGanados)
-      . filter (/= puntosDeUnJugador)) puntosDeTorneo
+gano puntosDeTorneo puntosDeUnJugador = (all ((< puntosGanados puntosDeUnJugador).puntosGanados) . filter (/= puntosDeUnJugador)) puntosDeTorneo
