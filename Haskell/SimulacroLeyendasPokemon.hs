@@ -52,7 +52,7 @@ guijarros :: Item
 guijarros = (+2)
 
 fragmentosDeHierro :: Float -> Item
-fragmentosDeHierro cantidad = (/ cantidad)
+fragmentosDeHierro cantidad = ( / cantidad)
 
 admirarElPaisaje :: Actividad
 admirarElPaisaje investigador = cambiarMochila (drop 3) . cambiarExperiencia (*0.95) $ investigador
@@ -62,4 +62,3 @@ cambiarMochila funcion investigador = Investigador { mochila = funcion (mochila 
 
 cambiarExperiencia :: (Float->Float) -> Investigador -> Investigador
 cambiarExperiencia funcion investigador = Investigador { experiencia = funcion (experiencia investigador)}
-
