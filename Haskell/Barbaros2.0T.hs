@@ -29,12 +29,13 @@ type Habilidad = String
 type Objeto = Barbaro -> Barbaro
 
 dave :: Barbaro
-dave = Barbaro "Dave" 100 ["tejer","escribirPoesia"] []
+dave = Barbaro "Dave" 100 ["tejer","escribirPoesia"] [ardilla, varitasDefectuosas]
 
-lula :: Barbaro
-lula = Barbaro "Lula" 50 ["Inmortabilidad", "Regeneracion"] [espadas 10]
+faffy :: Barbaro
+faffy = Barbaro "faffy" 50 ["Vuelo", "Manipulacion electrica"] [amuletosMisticos "resistencia"]
 
 -- Parte a --
+
 espadas :: Int -> Objeto
 espadas peso barbaro = barbaro {fuerza = fuerza barbaro + 2 * peso}
 
@@ -49,6 +50,35 @@ amuletosMisticos habilidad barbaro = agregarHabilidad habilidad barbaro
 agregarHabilidad :: Habilidad -> Objeto     
 agregarHabilidad habilidad barbaro =  cambiarHabilidades (habilidad:) barbaro
 
-
 cambiarHabilidades :: ([Habilidad] -> [Habilidad]) -> Barbaro -> Barbaro
 cambiarHabilidades funcion barbaro = barbaro {habilidades = funcion . habilidades $ barbaro}
+
+-- Parte c --
+--c. Las varitasDefectuosas, añaden la habilidad de hacer magia, pero desaparecen todos los demás objetos del bárbaro.
+varitasDefectuosas :: Objeto
+varitasDefectuosas barbaro = vaciarObjetos . agregarHabilidad "Hacer magia" $ barbaro
+
+vaciarObjetos :: Objeto
+vaciarObjetos barbaro = barbaro {objetos = []}
+
+-- Parte d --
+--d. Una ardilla, que no hace nada.
+ardilla :: Objeto
+ardilla barbaro = id barbaro
+
+-- Parte e --
+-- e. Una cuerda, que combina dos objetos distintos,obteniendo uno que realiza las transformaciones de los otros dos. 
+cuerda :: Objeto -> Objeto -> Objeto
+cuerda unObjeto otroObjeto = unObjeto . otroObjeto
+
+-- Punto 2 --
+{-
+El megafono es un objeto que potencia al bárbaro, concatenando sus habilidades y poniéndolas en mayúsculas. 
+
+*Main> megafono dave
+Barbaro "Dave" 100 ["TEJERESCRIBIRPOESIA"] [<function>,<function>]
+
+Sabiendo esto, definir al megafono, y al objeto megafonoBarbarico, que está formado por una cuerda, una ardilla y un megáfono.
+-}
+megafono :: Objeto -> Barbaro -> Barbaro
+megafono objeto barbaro = toUpper habilidades barbaro 
