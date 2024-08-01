@@ -33,17 +33,7 @@ dave :: Barbaro
 dave = Barbaro "Dave" 100 ["tejer","escribirPoesia"] [ardilla, varitasDefectuosas]
 
 faffy :: Barbaro
-<<<<<<< HEAD
 faffy = Barbaro "faffy" 50 ["Vuelo", "Manipulacion electrica"] [amuletosMisticos "resistencia"]
-=======
-faffy = Barbaro "Faffy" 50 ["Electricidad", "Escribir Poesía Atroz", "Robar"] [espadas 10]
-
-astro :: Barbaro
-astro = Barbaro "Astro" 200 ["Comer", "Escribir Poesía Atroz", "Robar"] [amuletosMisticos "Programar", megafono, megafonoBarbarico]
-
-candy :: Barbaro
-candy = Barbaro "Astro" 81 ["Comer", "Escribir Poesía Atroz"] [amuletosMisticos "Programar", megafono, megafonoBarbarico]
->>>>>>> 1524cf7fc1d9e448383978ad0582bcda46aad085
 
 -- Parte a --
 
@@ -73,30 +63,17 @@ varitasDefectuosas :: Objeto
 varitasDefectuosas barbaro = vaciarObjetos . agregarHabilidad "Hacer magia" $ barbaro
 
 vaciarObjetos :: Objeto
-<<<<<<< HEAD
 vaciarObjetos barbaro = barbaro {objetos = []}
-=======
-vaciarObjetos barbaro = barbaro{objetos=[]}
->>>>>>> 1524cf7fc1d9e448383978ad0582bcda46aad085
 
 -- Parte d --
 --d. Una ardilla, que no hace nada.
 ardilla :: Objeto
-<<<<<<< HEAD
 ardilla barbaro = id barbaro
 
 -- Parte e --
 -- e. Una cuerda, que combina dos objetos distintos,obteniendo uno que realiza las transformaciones de los otros dos. 
 cuerda :: Objeto -> Objeto -> Objeto
 cuerda unObjeto otroObjeto = unObjeto . otroObjeto
-=======
-ardilla barbaro = id barbaro 
-
--- Parte e --
---e.Una cuerda, que combina dos objetos distintos,obteniendo uno que realiza las transformaciones de los otros dos. 
-cuerda :: Objeto -> Objeto -> Objeto
-cuerda unObjeto otroObjeto = unObjeto . otroObjeto 
->>>>>>> 1524cf7fc1d9e448383978ad0582bcda46aad085
 
 -- Punto 2 --
 {-
@@ -108,19 +85,19 @@ Barbaro "Dave" 100 ["TEJERESCRIBIRPOESIA"] [<function>,<function>]
 
 Sabiendo esto, definir al megafono, y al objeto megafonoBarbarico, que está formado por una cuerda, una ardilla y un megáfono.
 -}
-megafono :: Objeto -> Barbaro -> Barbaro
-megafono objeto barbaro = toUpper habilidades barbaro 
-=======
-*Main> megafono dave
+--megafono :: Objeto -> Barbaro -> Barbaro
+--megafono objeto barbaro = toUpper habilidades barbaro 
+
+{-
 Barbaro "Dave" 100 ["TEJERESCRIBIRPOESIA"] [<function>,<function>]
 Sabiendo esto, definir al megafono, y al objeto megafonoBarbarico, que está formado por una cuerda, una ardilla y un megáfono. 
 -}
 
-megafono :: Objeto
-megafono barbaro = cambiarHabilidades ((: []) . map toUpper. concat) barbaro
+megafono' :: Objeto
+megafono' barbaro = cambiarHabilidades ((: []) . map toUpper. concat) barbaro
 
 megafonoBarbarico :: Objeto
-megafonoBarbarico barbaro = cuerda ardilla megafono $ barbaro 
+megafonoBarbarico barbaro = cuerda ardilla megafono' $ barbaro 
 
 -- Punto 3--
 {-
@@ -169,4 +146,4 @@ saqueo barbaro = nivelDeFuerza 80 barbaro && (elem "Robar" . habilidades) barbar
 
 nivelDeFuerza :: Int -> Barbaro -> Bool
 nivelDeFuerza nivel barbaro = (nivel <) . fuerza $ barbaro
->>>>>>> 1524cf7fc1d9e448383978ad0582bcda46aad085
+
