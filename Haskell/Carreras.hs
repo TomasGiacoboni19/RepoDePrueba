@@ -37,23 +37,133 @@ autosDistintos :: Auto -> Auto -> Bool
 autosDistintos unAuto otroAuto = not (color unAuto == color otroAuto) 
 
 distanciaEntre :: Auto -> Auto -> Int
-distanciaEntre unAuto otroAuto =  (distancia unAuto) - (distancia otroAuto)
+distanciaEntre unAuto otroAuto =  (distancia unAuto -) . distancia $ otroAuto
 
 {- B
 Saber si un auto va tranquilo en una carrera, que se cumple si no tiene ningún auto cerca y les va ganando a todos (por haber recorrido más distancia que los otros).
 -}
 vaTranquilo :: Auto -> Carrera -> Bool
-vaTranquilo unAuto carrera = (noTieneNingunAutoCerca unAuto carrera) && leVaGanandoATodos auto carrera
+vaTranquilo unAuto carrera = (not.tieneAlgunAutoCerca unAuto ) carrera && vaGanando unAuto carrera
 -- && leVaGanandoATodos auto carrera
 
-noTieneNingunAutoCerca :: Auto -> Carrera -> Bool
-noTieneNingunAutoCerca auto = all (not. estaCercaDeOtroAuto auto) 
+tieneAlgunAutoCerca :: Auto -> Carrera -> Bool
+tieneAlgunAutoCerca auto carrera = any (estaCercaDeOtroAuto auto) $ carrera
 
---leVaGanandoATodos :: Auto -> Carrera -> Bool-
---leVaGanandoATodos auto carrera = filter(auto)
---(not.estaCercaDeOtroAuto unAuto $ otroAuto) && (recorrioMasDistancia unAuto otroAuto)
+vaGanando :: Auto -> Carrera -> Bool
+vaGanando auto  = all(leVaGanandoATodos auto) . filter (/= auto) 
 
---recorrioMasDistancia Auto -> Auto -> Bool
---recorrioMasDistancia auto otroAuto = (distancia auto) > (distancia otroAuto)
+leVaGanandoATodos :: Auto -> Auto -> Bool
+leVaGanandoATodos ganador perdedor = (<distancia ganador) . distancia $ perdedor
 
 {-Conocer en qué puesto está un auto en una carrera, que es 1 + la cantidad de autos de la carrera que le van ganando.-}
+
+puesto :: Auto -> Carrera -> Int 
+puesto auto = (1 +) . length . filter (not . leVaGanandoATodos auto) 
+
+correr :: Int -> Auto -> Auto
+correr tiempo auto = auto {
+    distancia = distancia auto +
+        tiempo * velocidad auto
+}
+
+type ModificadorDeVelocidad = Int -> Int
+alterarVelocidad :: ModificadorDeVelocidad -> Auto -> Auto
+alterarVelocidad modificador auto =
+    auto { velocidad = (modificador . velocidad) auto}
+
+bajarVelocidad :: Int -> Auto -> Auto
+bajarVelocidad velocidadABajar 
+  = alterarVelocidad (max 0 . subtract velocidadABajar)
+
+------
+
+afectarALosQueCumplen :: (a -> Bool) -> (a -> a) -> [a] -> [a]
+afectarALosQueCumplen criterio efecto lista
+  = (map efecto . filter criterio) lista ++ filter (not.criterio) lista
+
+type PowerUp = Auto -> Carrera -> Carrera
+terremoto :: PowerUp
+terremoto autoQueGatillo =
+    afectarALosQueCumplen (estaCercaDeOtroAuto autoQueGatillo) (bajarVelocidad 50)
+
+miguelitos :: Int -> PowerUp
+miguelitos velocidadABajar autoQueGatillo =
+    afectarALosQueCumplen (leVaGanandoATodos autoQueGatillo) (bajarVelocidad velocidadABajar)
+
+jetPack :: Int -> PowerUp
+jetPack tiempo autoQueGatillo =
+    afectarALosQueCumplen (== autoQueGatillo)
+        (alterarVelocidad (\ _ -> velocidad autoQueGatillo) 
+          . correr tiempo . alterarVelocidad (*2))
+
+type Color = String
+type Evento = Carrera -> Carrera
+simularCarrera :: Carrera -> [Evento] -> [(Int, Color)]
+simularCarrera carrera eventos = (tablaDePosiciones . procesarEventos eventos) carrera
+
+tablaDePosiciones :: Carrera -> [(Int, Color)]
+tablaDePosiciones carrera 
+  = map (entradaDeTabla carrera) carrera
+
+entradaDeTabla :: Carrera -> Auto -> (Int, String)
+entradaDeTabla carrera auto = (puesto auto carrera, color auto)
+
+tablaDePosiciones' :: Carrera -> [(Int, String)]
+tablaDePosiciones' carrera 
+  = zip (map (flip puesto carrera) carrera) (map color carrera)
+
+procesarEventos :: [Evento] -> Carrera -> Carrera
+procesarEventos eventos carreraInicial =
+    foldl (\carreraActual evento -> evento carreraActual) 
+      carreraInicial eventos
+
+procesarEventos' eventos carreraInicial =
+    foldl (flip ($)) carreraInicial eventos
+
+correnTodos :: Int -> Evento
+correnTodos tiempo = map (correr tiempo)
+
+usaPowerUp :: PowerUp -> Color -> Evento
+usaPowerUp powerUp colorBuscado carrera =
+    powerUp autoQueGatillaElPoder carrera
+    where autoQueGatillaElPoder = find ((== colorBuscado).color) carrera
+
+find :: (c -> Bool) -> [c] -> c
+find cond = head . filter cond
+
+ejemploDeUsoSimularCarrera =
+    simularCarrera autosDeEjemplo [
+        correnTodos 30,
+        usaPowerUp (jetPack 3) "azul",
+        usaPowerUp terremoto "blanco",
+        correnTodos 40,
+        usaPowerUp (miguelitos 20) "blanco",
+        usaPowerUp (jetPack 6) "negro",
+        correnTodos 10
+    ]
+
+autosDeEjemplo :: [Auto]
+autosDeEjemplo = map (\color -> Auto color 120 0) ["rojo", "blanco", "azul", "negro"]
+
+---- Punto 5
+{-
+
+5a
+
+Se puede agregar sin problemas como una función más misilTeledirigido :: Color -> PowerUp, y usarlo como:
+usaPowerUp (misilTeledirigido "rojo") "azul" :: Evento
+
+
+5b
+
+- vaTranquilo puede terminar sólo si el auto indicado no va tranquilo
+(en este caso por tener a alguien cerca, si las condiciones estuvieran al revés, 
+terminaría si se encuentra alguno al que no le gana).
+Esto es gracias a la evaluación perezosa, any es capaz de retornar True si se encuentra alguno que cumpla 
+la condición indicada, y all es capaz de retornar False si alguno no cumple la condición correspondiente. 
+Sin embargo, no podría terminar si se tratara de un auto que va tranquilo.
+
+- puesto no puede terminar nunca porque hace falta saber cuántos le van ganando, entonces por más 
+que se pueda tratar de filtrar el conjunto de autos, nunca se llegaría al final para calcular la longitud.
+
+-}
