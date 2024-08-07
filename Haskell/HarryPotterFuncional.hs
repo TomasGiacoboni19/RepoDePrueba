@@ -202,7 +202,7 @@ mago4 :: Mago
 mago4 = Mago {
     nombre = "Winnie Pooh",
     edad = 25,
-    cantidadSalud = 75,
+    cantidadSalud = 10,
     hechizos = [curar 10, confundir, lanzarRayo, amnesia 2]
 }
 
