@@ -67,28 +67,69 @@ esElAvatar(Personaje):-
 > un personaje noEsMaestro si no controla ningún elemento, ni básico ni avanzado;
 > un personaje esMaestroPrincipiante si controla algún elemento básico pero ninguno avanzado; 
 > un personaje esMaestroAvanzado si controla algún elemento avanzado. Es importante destacar que el avatar también es un maestro avanzado.*/
-esMaestro(Personaje):-
-    esPersonaje(Personaje),
-    controla(_, Elemento).
+clasificacion(UnPersonaje, UnaClasificacion) :-
+  esPersonaje(UnPersonaje),
+  clasificacionPersonaje(UnPersonaje, UnaClasificacion).
 
-esMaestro(Personaje):-
-    not(esMaestro(Personaje)).
+clasificacionPersonaje(UnPersonaje, noEsMaestro) :-
+  not(controla(UnPersonaje, _)).
 
-esMaestroAvanzado()
+clasificacionPersonaje(UnPersonaje, esMaestroPrincipiante) :-
+  controla(UnPersonaje, _),
+  not(controlaElementoAvanzado(UnPersonaje)).
 
+controlaElementoAvanzado(UnPersonaje) :-
+  controla(UnPersonaje, UnElemento),
+  elementoAvanzadoDe(_, UnElemento).
+
+clasificacionPersonaje(UnPersonaje, esMaestroAvanzado) :-
+  controlaElementoAvanzado(UnPersonaje).
+
+clasificacionPersonaje(UnPersonaje, esMaestroAvanzado) :-
+  esElAvatar(UnPersonaje).
 
 
 /*3. saber si un personaje sigueA otro. Diremos que esto sucede si el segundo visitó todos los lugares que visitó el primero. También sabemos que zuko sigue a aang. */
+sigueA(Personaje, OtroPersonaje) :-
+    esPersonaje(Personaje),
+    esPersonaje(OtroPersonaje),
+    Personaje \= OtroPersonaje,
+    forall(visito(Personaje, Lugar), visito(OtroPersonaje, Lugar)).
+
+sigueA(aang, zuko).
+
+
 /*4. conocer si un lugar esDignoDeConocer, para lo que sabemos que:
 > todos los templos aire son dignos de conocer;
 > la tribu agua del norte es digna de conocer;
 > ningún lugar de la nación del fuego es digno de ser conocido;
 > un lugar del reino tierra es digno de conocer si no tiene muros en su estructura. */
+esDignoDeConocer(Lugar) :-
+  lugar(Lugar),
+  esDignoDeConocerSegunTipo(Lugar).
 
+lugar(Lugar) :-
+  visito(_, Lugar).
+
+esDignoDeConocerSegunTipo(temploAire(_)).
+esDignoDeConocerSegunTipo(tribuAgua(norte)).
+esDignoDeConocerSegunTipo(reinoTierra(_, Estructura)) :-
+  not(member(muro, Estructura)).
 /*5. definir si un lugar esPopular, lo cual sucede cuando fue visitado por más de 4 personajes. */
+esPopular(Lugar):-
+  lugar(Lugar),
+  findall(Personaje, visito(Personaje, Lugar), PersonajesQueVisitaron),
+  length(PersonajesQueVisitaron, Cantidad),
+  Cantidad > 4.
 
 /*6. Por último nos pidieron modelar la siguiente información en nuestra base de conocimientos sobre algunos personajes desbloqueables en el juego:
 > bumi es un personaje que controla el elemento tierra y visitó Ba Sing Se en el reino Tierra;
 > suki es un personaje que no controla ningún elemento y que visitó una prisión de máxima seguridad en la nación del fuego protegida por 200 soldados. 
 
 Recordá que los predicados deben ser totalmente inversibles. */
+esPersonaje(bumi).
+controla(bumi, tierra).
+visito(bumi, reinoTierra(baSingSe, [muro, zonaAgraria, sectorBajo, sectorMedio])).
+
+esPersonaje(suki).
+visito(suki, nacionDelFuego(prisionMaximaSeguridad, 200)).
