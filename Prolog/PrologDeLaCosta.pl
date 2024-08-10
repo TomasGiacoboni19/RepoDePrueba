@@ -116,6 +116,36 @@ leQuitaHambre(hamburguesa, Visitante) :-
     sentimiento(Visitante, Hambre, _),
     Hambre < 50.
 
+leQuitaHambre(panchitoConPapas, Visitante) :-
+    chico(Visitante).
+
+chico(Visitante):-
+    visitante(Visitante, Edad, _, _),
+    Edad =< 13.
+
+leQuitaHambre(lomitoCompleto, _).
+
+leQuitaHambre(caramelos, Visitante) :-
+    not(puedePagarComida (Visitante)).
+
+puedePagarComida(Visitante) :-
+    puedeComprar(Comida, Visitante),
+    Comida \= caramelos.
+
+% Punto 4
+/* Saber si puede producirse una lluvia de hamburguesas. Esto ocurre para un visitante que puede pagar una hamburguesa y elige una atracción que:
+> Es intensa con un coeficiente de lanzamiento mayor a 10, o
+> Es una montaña rusa peligrosa, o
+> Es el tobogán
+
+La peligrosidad de las montañas rusas depende de la edad del visitante. Para los adultos sólo es peligrosa la montaña rusa con mayor cantidad de giros invertidos en todo el parque, a menos que el visitante necesite entretenerse, en cuyo caso nada le parece peligroso. El criterio cambia para los chicos, donde independientemente de la cantidad de giros invertidos, los recorridos de más de un minuto de duración alcanzan para considerarla peligrosa. */
+
+lluviaDeHamburguesas(Visitante, Atraccion):-
+
+
+
+    
+
 
 
 
