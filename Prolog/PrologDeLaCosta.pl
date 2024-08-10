@@ -21,8 +21,8 @@ atraccion(tazasChinas, intensa(6)).
 atraccion(simulador3D, intensa(2)).
 
 % Montañas Rusas
-atraccion(abismoMortalRecargada, montaniaRusa(3, 2.14)).
-atraccion(paseoPorElBosque, montaniaRusa(0, 0.45)).
+atraccion(abismoMortalRecargada, montaniaRusa(3, 134)).
+atraccion(paseoPorElBosque, montaniaRusa(0, 45)).
 
 % Acuáticas
 atraccion(torpedoSalpicon, acuatica).
@@ -33,13 +33,7 @@ visitante(eusebio, 80, 3000, viejitos).
 visitante(carmela, 80, 0, viejitos).
 sentimiento(eusebio, 50, 0).
 sentimiento(carmela, 0, 25).
-% creados por mi
-visitante(pepito, 21, 5000, solo).
-sentimiento(pepito, 30, 60).
-visitante(fulano, 18, 5000, viejitos).
-sentimiento(fulano, 0, 0).
-visitante(mengano, 23, 5000, nadie).
-sentimiento(mengano, 0, 0).
+
 % Punto 2
 /* 
 Saber el estado de bienestar de un visitante.
@@ -98,17 +92,17 @@ estaAcompaniado(Visitante) :-
 puedeSatisfacer(Comida, Grupo) :- 
     grupo(Grupo),
     puestosDeComida(Comida, _),
-    forall(visitante(Integrante, _, _, Grupo), puedeComprarYSatisfacer(Comida, Integrante)).
+    forall(visitante(Visitante, _, _, Grupo), puedeComprarYSatisfacer(Comida, Visitante)).
 
 grupo(Grupo) :-
-    visitante(Visitante, _, _ , Grupo).
+    visitante(Visitante, _, _, Grupo).
 
 puedeComprarYSatisfacer(Comida, Visitante) :-
     puedeComprar(Comida, Visitante),
     leQuitaHambre(Comida, Visitante).
 
 puedeComprar(Comida, Visitante) :-
-    visitante(Visitante, _, Dinero, _).
+    visitante(Visitante, _, Dinero, _),
     puestosDeComida(Comida, Precio),
     Dinero >= Precio.
 
@@ -137,13 +131,76 @@ puedePagarComida(Visitante) :-
 > Es intensa con un coeficiente de lanzamiento mayor a 10, o
 > Es una montaña rusa peligrosa, o
 > Es el tobogán
-
 La peligrosidad de las montañas rusas depende de la edad del visitante. Para los adultos sólo es peligrosa la montaña rusa con mayor cantidad de giros invertidos en todo el parque, a menos que el visitante necesite entretenerse, en cuyo caso nada le parece peligroso. El criterio cambia para los chicos, donde independientemente de la cantidad de giros invertidos, los recorridos de más de un minuto de duración alcanzan para considerarla peligrosa. */
 
 lluviaDeHamburguesas(Visitante, Atraccion):-
+    puedeComprar(hamburguesa, Visitante),
+    atraccion(Atraccion, TipoDeAtraccion),
+    nauseasPorAtraccion(Visitante, Atraccion, TipoDeAtraccion).
 
+nauseasPorAtraccion(_, _, intensa(Coeficiente)).
+    Coeficiente >= 10.
 
+nauseasPorAtraccion(_, tobogan, _).
 
+nauseasPorAtraccion(Visitante, MontaniaRusa) :-
+    esPeligrosaPara(Visitante, MontaniaRusa).
+
+esPeligrosaPara(Visitante, montaniaRusa(MaximosGirosInvertidos, _)) :-
+    adulto(Visitante),
+    not(estadoDeBienestar(Visitante, necesitaEntretenerse)),
+    forall(atraccion(_, montaniaRusa(GirosInvertidos, _)), GirosInvertidos =< MaximosGirosInvertidos).
+
+adulto(Visitante) :-
+    not(chico(Visitante)).
+    
+esPeligrosaPara(Visitante, montaniaRusa(_, Duracion)) :-
+    chico(Visitante),
+    Duracion =< 60.
+
+% Punto 5
+/*
+Saber, para cada mes, las opciones de entretenimiento para un visitante. Esto debe incluir todos los puestos de comida en los cuales tiene dinero para comprar, todas las atracciones tranquilas a las que puede acceder (dependiendo su franja etaria), todas las atracciones intensas, todas las montañas rusas que no le sean peligrosas, y por último todas las atracciones acuáticas, siempre y cuando el mes de visita coincida con los meses de apertura.
+Finalmente, una atracción tranquila exclusiva para chicos también puede ser opción de entretenimiento para un visitante adulto en el caso en que en el grupo familiar haya un chico a quien acompañar.
+*/
+opcionesDeEntretenimiento(Visitante, Opcion, _) :-
+    puedeComprar(Opcion, Visitante).
+
+opcionesDeEntretenimiento(_, Opcion, _) :-
+    atraccion(Opcion, AtraccionTranquila),
+    atraccionTranquilaPara(Visitante, AtraccionTranquila).
+
+atraccionTranquilaPara(Visitante, tranquila(_)) :- 
+    chico(Visitante).
+
+atraccionTranquilaPara(_, tranquila(todaLaFamilia)) :-
+    
+atraccionTranquilaPara(Visitante, tranquila(chicos)) :-
+    tieneChicoEnSuGrupoFamiliar(Visitante).
+
+tieneChicoEnSuGrupoFamiliar(Visitante) :- % Repite un poco de lógica con estaAcompaniado pero bue %
+    visitante(Visitante, _, _, Grupo),
+    visitante(Chico, _, _, Grupo),
+    chico(Chico).
+
+opcionesDeEntretenimiento(_, Opcion, _) :-
+    atraccion(Opcion, intensa(_)).
+
+opcionesDeEntretenimiento(Visitante, Opcion, _) :-
+    atraccion(Opcion, montaniaRusa(GirosInvertidos, Duracion)),
+    not(esPeligrosaPara(Visitante, montaniaRusa(GirosInvertidos, Duracion))).
+
+opcionesDeEntretenimiento(_, Opcion, Mes) :-
+    atraccion(Opcion, acuatica),
+    mesDeApertura(Mes).
+
+mesDeApertura(septiembre).
+mesDeApertura(octubre).
+mesDeApertura(noviembre).
+mesDeApertura(diciembre).
+mesDeApertura(enero).
+mesDeApertura(febrero).
+mesDeApertura(marzo).
     
 
 
