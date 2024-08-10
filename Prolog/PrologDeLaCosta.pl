@@ -33,7 +33,13 @@ visitante(eusebio, 80, 3000, viejitos).
 visitante(carmela, 80, 0, viejitos).
 sentimiento(eusebio, 50, 0).
 sentimiento(carmela, 0, 25).
-
+% creados por mi
+visitante(pepito, 21, 5000, solo).
+sentimiento(pepito, 30, 60).
+visitante(fulano, 18, 5000, viejitos).
+sentimiento(fulano, 0, 0).
+visitante(mengano, 23, 5000, nadie).
+sentimiento(mengano, 0, 0).
 % Punto 2
 /* 
 Saber el estado de bienestar de un visitante.
@@ -44,27 +50,73 @@ Saber el estado de bienestar de un visitante.
 
 Hay una excepción para los visitantes que vienen solos al parque: nunca pueden sentir felicidad plena, sino que podrían estar mejor también cuando su hambre y aburrimiento suman 0.
 */
-estadoDeBienestar(Visitante, Bienestar) :-
+/*estadoDeBienestar(Visitante, Bienestar) :-
     sentimiento(Visitante, Hambre, Aburrimiento),
     Suma is Hambre + Aburrimiento,
     estadoDeBienestarSegun(Suma, Bienestar).
 
 estadoDeBienestarSegun(0, felicidadPlena) :-
-     estaAcompaniado(visitante).
-estadoDeBienestarSegun(0, felicidadPlena) :-
-    not(estaAcompaniado(visitante)).
+     estaAcompaniado(Visitante).
+estadoDeBienestarSegun(0, podriaEstarMejor) :-
+    not(estaAcompaniado(Visitante)).
 estadoDeBienestarSegun(Suma, podriaEstarMejor) :-
-    between(Suma, 1, 50).
+    between(1, 50, Suma).
 estadoDeBienestarSegun(Suma, necesitaEntretenerse) :-
-    between(Suma, 51, 99).
+    between(51, 99, Suma).
 estadoDeBienestarSegun(Suma, seQuierenIrACasa) :-
-    suma >= 100.
+    Suma >= 100.
+
+estaAcompaniado(Visitante) :-
+    visitante(Visitante, _, _, Grupo),
+    visitante(OtroVisitante, _, _, Grupo),
+    Visitante \= OtroVisitante.
+*/
+estadoDeBienestar(Visitante, Bienestar) :-
+    sentimiento(Visitante, Hambre, Aburrimiento),
+    Suma is Hambre + Aburrimiento,
+    bienestarSegunSuma(Suma, Visitante, Bienestar).
+
+bienestarSegunSuma(0, Visitante, felicidadPlena) :-
+    estaAcompaniado(Visitante).
+bienestarSegunSuma(0, Visitante, podriaEstarMejor) :-
+    not(estaAcompaniado(Visitante)).
+bienestarSegunSuma(Suma, _, podriaEstarMejor) :-
+    between(1, 50, Suma).
+bienestarSegunSuma(Suma, _, necesitaEntretenerse) :-
+    between(51, 99, Suma).
+bienestarSegunSuma(Suma, _, seQuierenIrACasa) :-
+    Suma >= 100.
 
 estaAcompaniado(Visitante) :-
     visitante(Visitante, _, _, Grupo),
     visitante(OtroVisitante, _, _, Grupo),
     Visitante \= OtroVisitante.
 
+% Punto 3
+% Saber si un grupo familiar puede satisfacer su hambre con cierta comida. Para que esto ocurra, cada integrante del grupo debe tener dinero suficiente como para comprarse esa comida y esa comida, a la vez, debe poder quitarle el hambre a cada persona. La hamburguesa satisface a quienes tienen menos de 50 de hambre; el panchito con papas sólo le quita el hambre a los chicos; y el lomito completo llena siempre a todo el mundo. Los caramelos son un caso particular: sólo satisfacen a las personas que no tienen dinero suficiente para pagar ninguna otra comida.
 
-  
+puedeSatisfacer(Comida, Grupo) :- 
+    grupo(Grupo),
+    puestosDeComida(Comida, _),
+    forall(visitante(Integrante, _, _, Grupo), puedeComprarYSatisfacer(Comida, Integrante)).
+
+grupo(Grupo) :-
+    visitante(Visitante, _, _ , Grupo).
+
+puedeComprarYSatisfacer(Comida, Visitante) :-
+    puedeComprar(Comida, Visitante),
+    leQuitaHambre(Comida, Visitante).
+
+puedeComprar(Comida, Visitante) :-
+    visitante(Visitante, _, Dinero, _).
+    puestosDeComida(Comida, Precio),
+    Dinero >= Precio.
+
+leQuitaHambre(hamburguesa, Visitante) :-
+    sentimiento(Visitante, Hambre, _),
+    Hambre < 50.
+
+
+
+
     
