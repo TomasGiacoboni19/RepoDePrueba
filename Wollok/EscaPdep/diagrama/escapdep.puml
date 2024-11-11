@@ -1,0 +1,90 @@
+@startuml escapdep
+
+    abstract class Sala {
+        nombre
+        dificultad
+
+        nombre()
+        precio()
+        {abstract}adicional()
+        esSalaDificil()
+    }
+
+    class SalaAnime extends Sala{
+        adicional()
+    }
+
+    class SalaHistoria extends Sala{
+        basadaEnHechosReales
+
+        adicional()
+        esSalaDificil()
+    }
+
+    class SalaTerror extends Sala{
+        cantidadDeSustos
+
+        adicional()
+        esSalaDificil()
+    }
+
+    class Escapista {
+        maestria
+        salasQueSalio []
+        saldo
+
+        saldo()
+        puedePagar(cantidad)
+        descontarSaldo(cantidad)
+        agregarSala(sala)
+        puedeSalir(sala)
+        subirNivelMaestria()
+        nombreDeLaSalaQueEscapo()
+    }
+
+    interface Maestria{
+        subirNivelMaestria()
+        puedeSalir(esSalaDificil, hizoMuchasSalas)
+    }
+
+    object amateur {
+        siguienteNivel
+
+        siguienteNivel()
+        puedeSalir(esSalaDificil, hizoMuchasSalas)
+    }
+
+    object profesional {
+        siguienteNivel
+
+        siguienteNivel()
+        puedeSalir(esSalaDificil, hizoMuchasSalas)
+    }
+
+    class Grupo{
+        team []
+        sala
+
+        sala()
+        sala(nuevaSala)
+        puedeSalir()
+        escapar()
+        pagar()
+        cantidadDeIntegrantes()
+        registrarEnCadaIntegrante()
+        puedenPagar()
+        todosTienenSuficiente(cantidadIndividual)
+        saldoGrupoMayorA(cantidadTotal)
+    }
+
+    Grupo --> "*" Escapista
+    Grupo ..> Sala
+    
+    Escapista --> Maestria
+    Escapista --> "*" Sala
+    
+
+    profesional .u.|> Maestria
+    amateur .u.|> Maestria
+
+@enduml
