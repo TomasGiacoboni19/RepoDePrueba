@@ -1,0 +1,1 @@
+class NoTieneDineroSuficienteException inherits Exception(message = "No tiene dinero para comprar la entrada"){}

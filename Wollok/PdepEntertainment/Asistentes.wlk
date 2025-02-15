@@ -1,6 +1,6 @@
-import Abono.*
-import PracticaWLK.parcial.parcial-objetos-2024-moracontreras.src.main.Entrada.Entrada
-import PracticaWLK.parcial.parcial-objetos-2024-moracontreras.src.main.NoTieneDineroSuficienteException.NoTieneDineroSuficienteException
+
+import Entradas.*
+import Error.*
 class Asistente{
     var tipoDeAbono
     var entradas = #{}
@@ -41,7 +41,7 @@ class Asistente{
     }
     method aumentarDescuentoPorVip(unValor){
         tipoDeAbono.aumentarDescuento(unValor)
-    }
+    }
 }
 
 
