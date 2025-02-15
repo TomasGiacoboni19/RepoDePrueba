@@ -1,0 +1,155 @@
+class AbonoVIP{
+    var descuento
+    method aumentarDescuento(unValor){
+        descuento += unValor
+    }
+    method descuentoAplicado(unValor){
+        return unValor*(1-descuento)
+    }
+    method esVip() = true
+}
+
+object abonoFan{
+    method esVip() = false
+    method descuentoAplicado(unValor) = unValor
+    method aumentarDescuento(unValor){}
+}
+
+
+import Abono.*
+import PracticaWLK.parcial.parcial-objetos-2024-moracontreras.src.main.Entrada.Entrada
+import PracticaWLK.parcial.parcial-objetos-2024-moracontreras.src.main.NoTieneDineroSuficienteException.NoTieneDineroSuficienteException
+class Asistente{
+    var tipoDeAbono
+    var entradas = #{}
+    var dinero
+
+    method comprarEntrada(unaFecha,unaBanda){
+        if( dinero > 0){
+            const entrada = new Entrada(banda = unaBanda, fecha = unaFecha)
+            self.pagar(entrada.precio())
+            self.agregarEntrada(entrada)
+        }else{
+            throw new NoTieneDineroSuficienteException()
+        }
+    }
+    method pagar(unValor){
+        const precioFinal = tipoDeAbono.descuentoAplicado(unValor)
+        self.modificarDinero(-precioFinal)
+    }
+    method agregarEntrada(unaEntrada){
+        entradas.add(unaEntrada)
+    }
+    method modificarDinero(unValor){
+        dinero += unValor
+    }
+    method entradasDelAnioPasado(){
+        const anioPasado = new Date().year() - 1
+        return entradas.filter({unaEntrada => unaEntrada.esDelAnio(anioPasado)})
+    }
+    method bandasDeEntradasCompradas(){
+        return entradas.map({unaEntrada => unaEntrada.banda()}).asSet()
+    }
+    method nombresDeBandasDeEntradasCompradas(){
+        return self.bandasDeEntradasCompradas().map({unaBanda => unaBanda.nombre()})
+    }
+    method entradas() = entradas
+    method esVip(){
+        return tipoDeAbono.esVip()
+    }
+    method aumentarDescuentoPorVip(unValor){
+        tipoDeAbono.aumentarDescuento(unValor)
+    }
+}
+
+class Banda{
+    const nombre
+    method canon() = 1000000
+    method presupuesto(){
+        return self.canon() + self.extra()
+    }
+    method extra()
+    method popularidad()
+    method nombre() = nombre
+}
+
+class BandaRock inherits Banda{
+    const cantidadDeSolosDeGuitarra
+    override method extra() = 10000
+    override method popularidad(){
+        return 100*cantidadDeSolosDeGuitarra
+    }
+}
+
+class BandaTrap inherits Banda{
+    const tieneHielo
+    override method extra() = 0
+    override method popularidad(){
+        if(tieneHielo){
+            return 1000
+        } else return 0
+    }
+    override method canon() = super()*self.popularidad()
+}
+
+class BandaIndie inherits Banda{
+    const cantidadDeInstrumentos
+    method largoDeSuNombre(){
+        return self.nombre().size()
+    }
+    override method popularidad(){
+        return 3.14 * self.largoDeSuNombre()
+    }
+    override method extra(){
+        return cantidadDeInstrumentos * 500
+    }
+}
+
+import PracticaWLK.parcial.parcial-objetos-2024-moracontreras.src.main.productora.productora
+
+class Entrada{
+    const banda 
+    const fecha
+    // asumo que el impuesto es un precio fijo
+    method precio(){
+        return 1000 + productora.impuestoEntradas()
+    }
+    method esDelAnio(unAnio){
+        return fecha.year() == unAnio
+    }
+    method banda() = banda
+}
+
+class NoTieneDineroSuficienteException inherits Exception(message = "No tiene dinero para comprar la entrada"){}
+
+object productora{
+    const bandas = #{}
+    const asistentes = #{}
+    var property impuestoEntradas = 0
+    method gananciaTotal(){
+        self.recaudacionDeEntradas() - self.presupuestoDeLasBandas()
+    }
+    method entradasDeAsistentes(){
+        return asistentes.flatMap({unAsistente => unAsistente.entradas()})
+    }
+    method recaudacionDeEntradas(){
+        return self.entradasDeAsistentes().sum({unaEntrada => unaEntrada.precio()})
+    }
+    method presupuestoDeLasBandas(){
+        return bandas.sum({unaBanda => unaBanda.presupuesto()})
+    }
+    method cantidadDeEntradasVendidas(){
+        return self.entradasDeAsistentes().size()
+    }
+    method bandaMasPopular(){
+        return bandas.max({unaBanda => unaBanda.popularidad()})
+    }
+    method bonificarAsistentesVip(){
+        self.asistentesVip().forEach({unAsistente => unAsistente.aumentarDescuentoPorVip(0.1)})
+    }
+    //la productora no aumenta directamente el descuento del abono ya que romperia el encapsulamiento en cuanto el abono forma parte del estado del asistente
+    method asistentesVip(){
+        return asistentes.filter({unAsistente => unAsistente.esVip()})
+    }
+}
+
