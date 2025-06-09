@@ -1,3 +1,3 @@
 object mercadoEscobas{
-    var valor = 10
+    var property valor = 10
 }
