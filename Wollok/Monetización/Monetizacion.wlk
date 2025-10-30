@@ -108,7 +108,7 @@ class Usuario{
   contenidos.add(contenido) 
   }
 
-  method recaudacionTotal() = 
+  method saldoTotal() = 
     contenidos.sum({contenido => contenido.recaudacion()})
 
   method esSuperUsuario() = contenidos.count{contenido => contenido.esPopular()} >= 10
