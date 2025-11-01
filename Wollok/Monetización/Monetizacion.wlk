@@ -1,3 +1,5 @@
+// Enunciado: https://docs.google.com/document/d/1lP48bZ8y-K3x-1-o6dhxOOQzWKyMoP8Pqajh56LdAzc/edit?tab=t.0#heading=h.1w6qyv2n0qy9
+
 // Contenidos
 class Contenido {
   const property titulo
