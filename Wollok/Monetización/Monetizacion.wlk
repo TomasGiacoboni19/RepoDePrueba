@@ -1,5 +1,3 @@
-// Enunciado: https://docs.google.com/document/d/1lP48bZ8y-K3x-1-o6dhxOOQzWKyMoP8Pqajh56LdAzc/edit?tab=t.0#heading=h.1w6qyv2n0qy9
-
 // Contenidos
 class Contenido {
   const property titulo
@@ -13,12 +11,13 @@ class Contenido {
     }
     monetizacion = nuevaMonetizacion
   }
-
-  override method initialize(monetizacion) {
-    if (!monetizacion.puedeAplicarseA(self)) {
-      throw new Exception(message = "La monetización no pudo instanciarse a este contenido")
-    }
-  }
+  
+   //method initialize(monetizacion) {
+   // if (!monetizacion.puedeAplicarseA(self)) {
+   //   throw new Exception(message = "La monetización no pudo instanciarse a este contenido")
+   // }
+  
+  //}
 
   method recaudacion() = monetizacion.recaudacionDe(self)
   method puedeVenderse() = self.esPopular()
@@ -68,7 +67,7 @@ class Donacion{
 class Descarga{
   const property precioPorDescarga
 
-  override method initialize(precio) {
+    method initialize(precio) {
     if(precioPorDescarga < 5) {
       throw new Exception(message = "El precio por descarga debe ser al menos 5")
     }
@@ -117,3 +116,5 @@ class Usuario{
 
   
 }
+
+//Enunciado: https://docs.google.com/document/d/1lP48bZ8y-K3x-1-o6dhxOOQzWKyMoP8Pqajh56LdAzc/edit?tab=t.0#heading=h.1w6qyv2n0qy9

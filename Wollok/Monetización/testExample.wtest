@@ -1,4 +1,4 @@
-import example.pepita
+/*import example.pepita
 
 describe "group of tests for pepita" {
 
@@ -6,4 +6,4 @@ describe "group of tests for pepita" {
     assert.equals(100, pepita.energy())
   }
 
-}
+}*/
