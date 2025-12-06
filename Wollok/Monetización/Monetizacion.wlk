@@ -1,4 +1,3 @@
-// Contenidos
 class Contenido {
   const property titulo
   var property vistas = 0
