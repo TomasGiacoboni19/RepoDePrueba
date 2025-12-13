@@ -84,7 +84,7 @@ class Overcklock {
             equipo.estaQuemado(true)
             throw New Exception(message = "El equipo se quemo por overclockearlo de mas")
         }
-        usosRestantes =- 1
+        usosRestantes -= 1
     } 
 }
 
