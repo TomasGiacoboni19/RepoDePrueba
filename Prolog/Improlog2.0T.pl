@@ -107,4 +107,9 @@ Saber si una persona puede incorporarse a un grupo y con qué instrumento, que s
 Si se trata de una big band el nivel mínimo es 1, y si se trata de una formación particular será 7 - la cantidad de instrumentos buscados para esa formación.
 */
 
+puedeIncorporarse(Integrante, Grupo, Instrumento) :-
+    
+
+
+
 

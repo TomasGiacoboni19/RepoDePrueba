@@ -88,3 +88,13 @@ Encontrarse en Recoleta o Palermo
 Ser de 1 o 2 ambientes
 Precio menor a $6000 por mes
 -}
+
+ejemploDeBusqueda :: [Depto]
+ejemploDeBusqueda = buscar ([ubicadoEn ["Recoleta", "Palermo"], cumpleRango ambientes 1 2, cumpleRango precio 0 6000]) (mayor superficie) deptosDeEjemplo
+
+{- Punto 4
+
+Definir la función mailsDePersonasInteresadas que a partir de un departamento y una lista de personas retorne los mails de las personas que tienen alguna búsqueda que se cumpla para el departamento dado.
+-}
+mailsDePersonasInteresadas :: Depto -> [Persona] -> [Mail]
+mailsDePersonasInteresadas depto = map mail . filter (any (cumpleBusqueda depto) . busquedas)
